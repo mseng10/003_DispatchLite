@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dispatchlite.settings')
+settings_module = "dispatchlite.settings.production" if 'WEBSITE_HOSTNAME' in os.environ else 'dispatchlite.settings.development'
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
 
 application = get_wsgi_application()
