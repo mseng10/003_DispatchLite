@@ -18,7 +18,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12
+        image: postgres1:12
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: temppassword
