@@ -6,4 +6,5 @@ urlpatterns = [
     path('templates/', views.templates),
     path('templates/<int:id>', views.template),
     path('campaigns/', views.campaign),
+    path('populations/', views.population),
 ]

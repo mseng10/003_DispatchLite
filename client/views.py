@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from client.models import Client, Template
 from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
-                               TemplateSerializer, CampaignSerializer
+                               TemplateSerializer, CampaignSerializer, PopulationSerializer
 from client.permissions import HasAPIKey
 from rest_framework.decorators import permission_classes,api_view
 from rest_framework import status
@@ -35,13 +35,27 @@ def template(request,id):
         return JsonResponse('Template not found',safe=False, status=status.HTTP_404_NOT_FOUND)
 
 @permission_classes([HasAPIKey])
-@csrf_exempt
 @parser_classes([JSONParser])
 @api_view(['POST'])
 def campaign(request, format=None):
     serializer = CampaignSerializer(data=request.data)
     if serializer.is_valid():
         obj = serializer.save()
-        return JsonResponse(obj.url, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse(obj.url, safe=False, status=status.HTTP_201_CREATED)
     else:
+        return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
+
+@permission_classes([HasAPIKey])
+@parser_classes([JSONParser])
+@api_view(['POST'])
+def population(request, format=None):
+    serializer = PopulationSerializer(data=request.data)
+    if serializer.is_valid():
+        obj = serializer.save()
+        return JsonResponse(obj.url, safe=False, status=status.HTTP_201_CREATED)
+    else:
+        for value in serializer.errors:
+            for v in serializer.errors[value]:
+                if 'population with this name already exists.' == v:
+                    return JsonResponse("Conflict - Population name already in use for client", safe=False, status=status.HTTP_409_CONFLICT)
         return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
