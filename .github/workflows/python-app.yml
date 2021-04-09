@@ -1,0 +1,94 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python.
+# Once the build completes and all tests pass, the application will be deployed to azure.
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+#name: PGSCM Workflow For Merges Into Main
+#
+#on:
+#  push:
+#    branches: [ main ]
+#
+#env:
+#  WEBAPP_NAME: 'pgscm'
+#
+#jobs:
+#  build:
+#
+#    runs-on: ubuntu-latest
+#
+#    services:
+#      postgres:
+#        image: postgres:12
+#        env:
+#          POSTGRES_USER: postgres
+#          POSTGRES_PASSWORD: temppassword
+#          POSTGRES_DB: PostgresDevelopmentCI
+#        ports:
+#          - 5432:5432
+#        options: >-
+#          --health-cmd pg_isready
+#          --health-interval 10s
+#          --health-timeout 5s
+#          --health-retries 5
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#
+#    - name: Set up Python 3.8
+#      uses: actions/setup-python@v2
+#      with:
+#        python-version: 3.8
+#
+#    - name: Install dependencies
+#      run: |
+#        python -m pip install --upgrade pip
+#        pip install pytest pytest-bdd pytest-django
+#        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#
+#    - name: Run migrations
+#      run: |
+#        python manage.py makemigrations
+#
+#    - name: Collect static
+#      run: python manage.py collectstatic
+#
+#    - name: Test with pytest
+#      run: |
+#        export PYTHONPATH=tests
+#        pytest
+#
+#    - name: Upload artifact deployment
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: app
+#        path: |
+#          .
+#
+#  deploy:
+#
+#    #require build to pass tests to be able to deploy
+#    needs: build
+#
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - uses: actions/download-artifact@v2
+#      with:
+#        name: app
+#        path: .
+#
+#    - name: Log in to Azure CLI
+#      uses: azure/login@v1
+#      with:
+#        creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL }}
+#
+#    - name: Disable static collection and set migration command on App Service
+#      uses: Azure/appservice-settings@v1
+#      with:
+#        app-name: ${{ env.WEBAPP_NAME }}
+#        app-settings-json: '[{ "name": "DISABLE_COLLECTSTATIC", "value": "true" }, { "name": "POST_BUILD_COMMAND",  "value": "python manage.py makemigrations && python manage.py migrate" }, { "name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true" }, { "name": "DJANGO_ENV", "value": "production"}]'
+#
+#    - name: Deploy to App Service
+#      uses: azure/webapps-deploy@v2
+#      with:
+#        app-name: ${{ env.WEBAPP_NAME}}
