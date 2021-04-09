@@ -45,7 +45,9 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': []
+    'DEFAULT_PERMISSION_CLASSES': [
+        "client.permissions.HasAPIKey"
+    ]
 }
 
 ROOT_URLCONF = 'dispatchlite.urls'
