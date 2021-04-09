@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from client.models import Client, Template, Campaign
+from client.models import Client, Template, Campaign, Population
 import collections
 
 def returnListOfURLS(data):
@@ -64,3 +64,20 @@ class CampaignSerializer(serializers.ModelSerializer):
         # Required for post requests from Dispatch API, also they cannot be null
         extra_kwargs = {'name': {'required': True, 'allow_null': False},
                         'productionMode': {'required': True, 'allow_null': False}}
+
+class PopulationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Population
+        fields = ('name',
+                  'description',
+                  'dataSourceType',
+                  'parameterized',
+                  'archived',
+                  'hidden',
+                  'tags',
+                  'manualEmailList'
+                  )
+
+        # Required for post requests from Dispatch API, also they cannot be null
+        extra_kwargs = {'name': {'required': True, 'allow_null': False},
+                        'dataSourceType': {'required': True, 'allow_null': False}}
