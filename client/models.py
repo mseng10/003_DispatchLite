@@ -48,3 +48,17 @@ class Template(models.Model):
         self.id = identifier
         self.url = self.url + str(identifier)
         super(Template, self).save(*args, **kwargs)
+
+class Campaign(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    tags = ArrayField(models.CharField(max_length=55),blank=True,null=True)
+    productionMode = models.BooleanField(default=True) # Default to true for us
+    communications = ArrayField(models.CharField(max_length=55),blank=True,null=True)
+    url = models.CharField(max_length=100, default=url+'communications/', editable=False) ## not Dispatch just helper
+
+    def save(self, *args, **kwargs):
+        identifier = random.randint(100000000, 999999999)
+        self.id = identifier
+        self.url = self.url + str(identifier)
+        super(Campaign, self).save(*args, **kwargs)
