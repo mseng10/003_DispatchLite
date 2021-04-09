@@ -2,7 +2,7 @@ from django.db import models
 import random
 from django.utils.crypto import get_random_string
 import os
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField,JSONField
 
 if 'WEBSITE_HOSTNAME' in os.environ:
     url = 'finalurl'
@@ -63,3 +63,31 @@ class Campaign(models.Model):
         self.id = identifier
         self.url = self.url + str(identifier)
         super(Campaign, self).save(*args, **kwargs)
+
+class Population(models.Model):
+    class DataSourceTypes(models.TextChoices):
+        MANUALEMAILLIST = 'ManualEmailList'
+        MANUALIDLIST = 'ManualIDList'
+        MANUALECSVLIST = 'ManualCSVList'
+        DATABASEQUERY = 'DatabaseQuery'
+        WEBSERVICECALL = 'WebServiceCall'
+        PREDEFINEDPOPULATION = 'PredefinedPopulation'
+        ADHOCLIST = 'AdhocList'
+
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
+    dataSourceType = models.CharField(max_length=20, choices=DataSourceTypes.choices)
+    description = models.CharField(max_length=4000, blank=True)
+    parameterized = models.BooleanField(blank=True, null=True, default=False)
+    archived = models.BooleanField(blank=True, null=True, default=False)
+    hidden = models.BooleanField(blank=True, null=True, default=False)
+    client = models.CharField(max_length=100, default=url+'client', editable=False)
+    tags = ArrayField(models.CharField(max_length=55),blank=True,null=True)
+    manualEmailList = models.JSONField()
+    url = models.CharField(max_length=100, default=url+'populations/', editable=False) ## not Dispatch just helper
+
+    def save(self, *args, **kwargs):
+        identifier = random.randint(100000000, 999999999)
+        self.id = identifier
+        self.url = self.url + str(identifier)
+        super(Population, self).save(*args, **kwargs)
