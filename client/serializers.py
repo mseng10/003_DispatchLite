@@ -26,3 +26,29 @@ class TemplatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = ('url',)
+
+class TemplateSerializer(serializers.ModelSerializer):
+    comments = serializers.SerializerMethodField()
+    content = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Template
+        fields = ('client',
+                  'comments',
+                  'content',
+                  'description',
+                  'dynamic',
+                  'id',
+                  'name',
+                  'tags',
+                  'type')
+
+    def get_comments(self, instance):
+        return (instance.comments.url if instance.comments != '' else None)
+
+    def get_content(self, instance):
+        return (instance.content.url if instance.content != '' else None)
+
+    def get_description(self, instance):
+        return (instance.description.url if instance.description != '' else None)
