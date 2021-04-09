@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from client.models import Client, Template, Campaign
+from client.models import Client, Template
 from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
                                TemplateSerializer, CampaignSerializer
 from client.permissions import HasAPIKey
@@ -21,14 +21,8 @@ def client(request):
 def templates(request):
     if request.method == 'GET':
         templates = Template.objects.all()
-        print(templates[0].url)
         serializer = TemplatesSerializer(data=templates, many=True)
-        print(serializer.is_valid())
-        print(serializer.errors)
-        print(serializer.data)
-
         data = returnListOfURLS(serializer.data)
-
         return JsonResponse(data, safe=False,status=status.HTTP_200_OK)
 
 @permission_classes([HasAPIKey])
@@ -45,7 +39,6 @@ def template(request,id):
 @parser_classes([JSONParser])
 @api_view(['POST'])
 def campaign(request, format=None):
-    print(request)
     serializer = CampaignSerializer(data=request.data)
     if serializer.is_valid():
         obj = serializer.save()
