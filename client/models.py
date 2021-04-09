@@ -34,7 +34,7 @@ class Template(models.Model):
 
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=4000, blank=True)
     dynamic = models.BooleanField(blank=True, null=True)
     tags = ArrayField(models.CharField(max_length=55),blank=True,null=True)
     content = models.CharField(max_length=100, blank=True)
@@ -55,7 +55,8 @@ class Campaign(models.Model):
     tags = ArrayField(models.CharField(max_length=55),blank=True,null=True)
     productionMode = models.BooleanField(default=True) # Default to true for us
     communications = ArrayField(models.CharField(max_length=55),blank=True,null=True)
-    url = models.CharField(max_length=100, default=url+'communications/', editable=False) ## not Dispatch just helper
+    client = models.CharField(max_length=100, default=url+'client', editable=False)
+    url = models.CharField(max_length=100, default=url+'campaigns/', editable=False) ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
