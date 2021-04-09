@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Client, Template
+from .models import Client, Template, Campaign
 
 class ClientAdmin(admin.ModelAdmin):
     pass
@@ -10,3 +10,8 @@ class TemplatesAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(Template, TemplatesAdmin)
+
+class CampaignAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(Campaign, CampaignAdmin)
