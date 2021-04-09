@@ -1,9 +1,13 @@
 from django.http import JsonResponse
 from client.models import Client, Template, Campaign
-from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,TemplateSerializer
+from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
+                               TemplateSerializer, CampaignSerializer
 from client.permissions import HasAPIKey
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes,api_view
 from rest_framework import status
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from rest_framework.decorators import parser_classes
 
 @permission_classes([HasAPIKey])
 def client(request):
@@ -35,3 +39,16 @@ def template(request,id):
             serializer = TemplateSerializer(template)
             return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
         return JsonResponse('Template not found',safe=False, status=status.HTTP_404_NOT_FOUND)
+
+@permission_classes([HasAPIKey])
+@csrf_exempt
+@parser_classes([JSONParser])
+@api_view(['POST'])
+def campaign(request, format=None):
+    print(request)
+    serializer = CampaignSerializer(data=request.data)
+    if serializer.is_valid():
+        obj = serializer.save()
+        return JsonResponse(obj.url, safe=False, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
