@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from client.models import Client, Template
-from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS
+from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,TemplateSerializer
 from client.permissions import HasAPIKey
 from rest_framework.decorators import permission_classes
 from rest_framework import status
@@ -26,3 +26,13 @@ def templates(request):
         data = returnListOfURLS(serializer.data)
 
         return JsonResponse(data, safe=False,status=status.HTTP_200_OK)
+
+@permission_classes([HasAPIKey])
+def template(request,id):
+    if request.method == 'GET':
+        template = Template.objects.get(id=id)
+        serializer = TemplateSerializer(template)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+
+        print(serializer.errors)
+        return JsonResponse('Template not found',safe=False, status=status.HTTP_404_NOT_FOUND)
