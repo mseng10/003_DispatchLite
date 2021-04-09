@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from client.models import Client, Template
+from client.models import Client, Template, Campaign
 import collections
 
 def returnListOfURLS(data):
@@ -52,3 +52,15 @@ class TemplateSerializer(serializers.ModelSerializer):
 
     def get_description(self, instance):
         return (instance.description.url if instance.description != '' else None)
+
+class CampaignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Campaign
+        fields = ('name',
+                  'tags',
+                  'productionMode',
+                  'communications')
+
+        # Required for post requests from Dispatch API, also they cannot be null
+        extra_kwargs = {'name': {'required': True, 'allow_null': False},
+                        'productionMode': {'required': True, 'allow_null': False}}
