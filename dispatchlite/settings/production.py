@@ -1,4 +1,4 @@
-from PGSCM.settings.common import *
+from dispatchlite.settings.common import *
 import os
 
 DEBUG = False
