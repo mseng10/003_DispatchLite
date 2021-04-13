@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from client.models import Client, Template, Campaign, Population, Member
+from client.models import Client, Template, Campaign, Population, Message
 import collections
 
 
@@ -89,12 +89,22 @@ class PopulationSerializer(serializers.ModelSerializer):
                         'dataSourceType': {'required': True, 'allow_null': False}}
 
 
-# rough MemberSerializer
-class MemberSerializer(serializers.ModelSerializer):
+# rough MessageSerializer
+class MessageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Member
-        fields = ('toName',
-                  'toAddress')
-
-        extra_kwargs = {'toName': {'required': True, 'allow_null': False},
-                        'toAddress': {'required': True, 'allow_null': False}}
+        model = Message
+        fields = ('memberId',
+                  'type',
+                  'excluded',
+                  'member',
+                  'sentDate',
+                  'batch',
+                  'receiptDate',
+                  'fromName',
+                  'fromAddress',
+                  'fromPhone',
+                  'toAddress',
+                  'toName',
+                  'toPhone',
+                  'subject'
+                  )
