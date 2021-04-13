@@ -134,3 +134,37 @@ class Member(models.Model):
     toName = models.CharField()
     toAddress = models.EmailField()
 
+
+# rough draft of Message model
+class Message(models.Model):
+    class Types(models.TextChoices):
+        EMAIL = 'EMAIL'
+        PRINT = 'PRINT'
+        TWILIO = 'TWILIO'
+
+    id = models.IntegerField(primary_key=True, editable=False)
+    memberID = models.CharField(editable=False)
+    type = models.CharField(max_length=15, choices=Types.choices)
+    excluded = models.BooleanField()
+    member = models.JSONField()
+    sentDate = models.DateTimeField()
+    batch = models.JSONField()
+    receiptDate = models.DateTimeField()
+    fromName = models.CharField()
+    fromAddress = models.EmailField()
+    fromPhone = models.CharField()
+    toAddress = models.EmailField()
+    toName = models.CharField()
+    toPhone = models.CharField()
+    subject = models.CharField()
+
+    def save(self, *args, **kwargs):
+        identifier = random.randint(100000000, 999999999)
+        self.id = identifier
+        self.url = self.url + str(identifier)
+        super(Message, self).save(*args, **kwargs)
+
+
+
+
+
