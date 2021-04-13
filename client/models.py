@@ -9,15 +9,16 @@ if 'WEBSITE_HOSTNAME' in os.environ:
 else:
     url = 'http://127.0.0.1:8000/'
 
+
 # Create your models here.
 class Client(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-    campaigns = models.CharField(max_length=100, default=url+'campaigns', editable=False)
-    templates = models.CharField(max_length=100, default=url+'templates', editable=False)
-    populations = models.CharField(max_length=100, default=url+'populations', editable=False)
-    suppressionLists = models.CharField(max_length=100, default=url+'suppressionLists', editable=False)
-    archives = models.CharField(max_length=100, default=url+'archives', editable=False)
+    campaigns = models.CharField(max_length=100, default=url + 'campaigns', editable=False)
+    templates = models.CharField(max_length=100, default=url + 'templates', editable=False)
+    populations = models.CharField(max_length=100, default=url + 'populations', editable=False)
+    suppressionLists = models.CharField(max_length=100, default=url + 'suppressionLists', editable=False)
+    archives = models.CharField(max_length=100, default=url + 'archives', editable=False)
     key = models.CharField(max_length=100, editable=False)
 
     def save(self, *args, **kwargs):
@@ -25,6 +26,7 @@ class Client(models.Model):
         self.key = get_random_string(20)
         print(self.key)
         super(Client, self).save(*args, **kwargs)
+
 
 class Template(models.Model):
     class Types(models.TextChoices):
@@ -36,12 +38,12 @@ class Template(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=4000, blank=True)
     dynamic = models.BooleanField(blank=True, null=True)
-    tags = ArrayField(models.CharField(max_length=55),blank=True,null=True)
+    tags = ArrayField(models.CharField(max_length=55), blank=True, null=True)
     content = models.CharField(max_length=100, blank=True)
     comments = models.CharField(max_length=100, blank=True)
     type = models.CharField(max_length=7, choices=Types.choices)
-    client = models.CharField(max_length=100, default=url+'client', editable=False)
-    url = models.CharField(max_length=100, default=url+'templates/', editable=False) ## not Dispatch just helper
+    client = models.CharField(max_length=100, default=url + 'client', editable=False)
+    url = models.CharField(max_length=100, default=url + 'templates/', editable=False)  ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
@@ -49,20 +51,22 @@ class Template(models.Model):
         self.url = self.url + str(identifier)
         super(Template, self).save(*args, **kwargs)
 
+
 class Campaign(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
-    tags = ArrayField(models.CharField(max_length=55),blank=True,null=True)
-    productionMode = models.BooleanField(default=True) # Default to true for us
-    communications = ArrayField(models.CharField(max_length=55),blank=True,null=True)
-    client = models.CharField(max_length=100, default=url+'client', editable=False)
-    url = models.CharField(max_length=100, default=url+'campaigns/', editable=False) ## not Dispatch just helper
+    tags = ArrayField(models.CharField(max_length=55), blank=True, null=True)
+    productionMode = models.BooleanField(default=True)  # Default to true for us
+    communications = ArrayField(models.CharField(max_length=55), blank=True, null=True)
+    client = models.CharField(max_length=100, default=url + 'client', editable=False)
+    url = models.CharField(max_length=100, default=url + 'campaigns/', editable=False)  ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
         self.id = identifier
         self.url = self.url + str(identifier)
         super(Campaign, self).save(*args, **kwargs)
+
 
 class Population(models.Model):
     class DataSourceTypes(models.TextChoices):
@@ -81,10 +85,10 @@ class Population(models.Model):
     parameterized = models.BooleanField(blank=True, null=True, default=False)
     archived = models.BooleanField(blank=True, null=True, default=False)
     hidden = models.BooleanField(blank=True, null=True, default=False)
-    client = models.CharField(max_length=100, default=url+'client', editable=False)
-    tags = ArrayField(models.CharField(max_length=55),blank=True,null=True)
+    client = models.CharField(max_length=100, default=url + 'client', editable=False)
+    tags = ArrayField(models.CharField(max_length=55), blank=True, null=True)
     manualEmailList = models.JSONField()
-    url = models.CharField(max_length=100, default=url+'populations/', editable=False) ## not Dispatch just helper
+    url = models.CharField(max_length=100, default=url + 'populations/', editable=False)  ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
@@ -93,7 +97,7 @@ class Population(models.Model):
         super(Population, self).save(*args, **kwargs)
 
 
-#rough draft of Batch model
+# rough draft of Batch model
 class Batch(models.Model):
     class StatusTypes(models.TextChoices):
         SCHEDULED = 'SCHEDULED'
@@ -123,3 +127,10 @@ class Batch(models.Model):
         self.id = identifier
         self.url = self.url + str(identifier)
         super(Batch, self).save(*args, **kwargs)
+
+
+# rough draft of Member model
+class Member(models.Model):
+    toName = models.CharField()
+    toAddress = models.EmailField()
+
