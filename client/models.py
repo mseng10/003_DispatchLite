@@ -120,12 +120,11 @@ class Batch(models.Model):
     status = models.CharField(max_length=30, choices=StatusTypes.choices)
     communication = models.CharField(max_length=100, default=url + 'communication', editable=False)
     members = ArrayField(models.JSONField(), blank=True, null=True)  # this may need tweaking
+    url = models.CharField(max_length=300, default=url + 'batches/')
 
     def save(self, *args, **kwargs):
-        identifier = random.randint(100000000, 999999999)
-        self.id = identifier
-        self.url = self.url + str(identifier)
         super(Batch, self).save(*args, **kwargs)
+        self.url = self.url + str(self.id)
 
 
 # rough draft of Member model
@@ -142,11 +141,11 @@ class Message(models.Model):
         TWILIO = 'TWILIO'
 
     id = models.IntegerField(primary_key=True, editable=False)
-    memberID = models.CharField(editable=False)
+    memberId = models.CharField(max_length=100, editable=False)
     type = models.CharField(max_length=15, choices=Types.choices)
-    excluded = models.BooleanField()
+    excluded = models.BooleanField(default=False)
     member = models.JSONField()
-    sentDate = models.DateTimeField()
+    sentDate = models.DateTimeField(null=True)
     batch = models.JSONField()
     receiptDate = models.DateTimeField()
     fromName = models.CharField()
