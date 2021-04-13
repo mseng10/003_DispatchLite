@@ -26,11 +26,14 @@ class Client(models.Model):
         print(self.key)
         super(Client, self).save(*args, **kwargs)
 
+
+class Types(models.TextChoices):
+    EMAIL = 'EMAIL'
+    LETTER = 'LETTER'
+    TWILIO = 'TWILIO'
+
+
 class Template(models.Model):
-    class Types(models.TextChoices):
-        EMAIL = 'EMAIL'
-        LETTER = 'LETTER'
-        TWIML = 'TWIML'
 
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -63,6 +66,32 @@ class Campaign(models.Model):
         self.id = identifier
         self.url = self.url + str(identifier)
         super(Campaign, self).save(*args, **kwargs)
+
+
+class Communication(models.Model):
+    class AlertOnChoices(models.TextChoices):
+        ERRORS = 'ERRORS'
+        WARNINGS = 'WARNINGS'
+        ALL = 'ALL'
+
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
+    comments = models.CharField(max_length=100, blank=True)
+    type = models.CharField(max_length=6, choices=Types.choices)
+    # email = None  # todo
+    # destinations = None  # todo
+    alertOn = models.CharField(max_length=8, choices=AlertOnChoices.choices, default='ALL')
+    # placeholders = None  # todo
+    template = models.CharField(max_length=300, blank=True)
+    adhocs = models.CharField(max_length=300, blank=True)
+    notificationAddresses = ArrayField(models.CharField(max_length=200), blank=True, null=True)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        identifier = random.randint(100000000, 999999999)
+        self.id = identifier
+        super(Communication, self).save(*args, **kwargs)
+
 
 class Population(models.Model):
     class DataSourceTypes(models.TextChoices):
