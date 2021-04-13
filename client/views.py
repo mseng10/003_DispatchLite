@@ -1,12 +1,13 @@
 from django.http import JsonResponse
 from client.models import Client, Template
 from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
-                               TemplateSerializer, CampaignSerializer, PopulationSerializer
+                               TemplateSerializer, CampaignSerializer, PopulationSerializer, CommunicationSerializer
 from client.permissions import HasAPIKey
 from rest_framework.decorators import permission_classes,api_view
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import parser_classes
+
 
 @permission_classes([HasAPIKey])
 def client(request):
@@ -43,6 +44,16 @@ def campaign(request, format=None):
         return JsonResponse(obj.url, safe=False, status=status.HTTP_201_CREATED)
     else:
         return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
+
+
+@permission_classes([HasAPIKey])
+@parser_classes([JSONParser])
+@api_view(['POST'])
+def communication(request, campaign_id):
+    serializer = CommunicationSerializer(data=request.data)
+    breakpoint()
+    pass
+
 
 @permission_classes([HasAPIKey])
 @parser_classes([JSONParser])
