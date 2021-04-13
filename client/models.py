@@ -119,8 +119,7 @@ class Batch(models.Model):
     numErrors = models.IntegerField()
     status = models.CharField(max_length=30, choices=StatusTypes.choices)
     communication = models.CharField(max_length=100, default=url + 'communication', editable=False)
-    members = ArrayField(models.CharField(max_length=55), blank=True,
-                         null=True)  # this needs tweaking --> maybe instead of charField we should use json field
+    members = ArrayField(models.JSONField(), blank=True, null=True)  # this may need tweaking
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
