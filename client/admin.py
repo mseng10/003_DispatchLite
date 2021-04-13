@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Client, Template, Campaign, Population
 
 class ClientAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'name', 'key')
 
 admin.site.register(Client, ClientAdmin)
 
