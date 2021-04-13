@@ -1,12 +1,13 @@
 from django.http import JsonResponse
-from client.models import Client, Template
-from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
-                               TemplateSerializer, CampaignSerializer, PopulationSerializer
+from client.models import Client, Template, Member
+from client.serializers import ClientSerializer, TemplatesSerializer, returnListOfURLS, \
+    TemplateSerializer, CampaignSerializer, PopulationSerializer, MemberSerializer
 from client.permissions import HasAPIKey
-from rest_framework.decorators import permission_classes,api_view
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import parser_classes
+
 
 @permission_classes([HasAPIKey])
 def client(request):
@@ -14,7 +15,8 @@ def client(request):
     if request.method == 'GET':
         client = Client.objects.get(key=key)
         serializer = ClientSerializer(client)
-        return JsonResponse(serializer.data, safe=False,status=status.HTTP_200_OK)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+
 
 @permission_classes([HasAPIKey])
 def templates(request):
@@ -22,16 +24,18 @@ def templates(request):
         templates = Template.objects.all()
         serializer = TemplatesSerializer(data=templates, many=True)
         data = returnListOfURLS(serializer.data)
-        return JsonResponse(data, safe=False,status=status.HTTP_200_OK)
+        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+
 
 @permission_classes([HasAPIKey])
-def template(request,id):
+def template(request, id):
     if request.method == 'GET':
         template = Template.objects.get(id=id)
         if template:
             serializer = TemplateSerializer(template)
             return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        return JsonResponse('Template not found',safe=False, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse('Template not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+
 
 @permission_classes([HasAPIKey])
 @parser_classes([JSONParser])
@@ -43,6 +47,7 @@ def campaign(request, format=None):
         return JsonResponse(obj.url, safe=False, status=status.HTTP_201_CREATED)
     else:
         return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
+
 
 @permission_classes([HasAPIKey])
 @parser_classes([JSONParser])
@@ -56,5 +61,17 @@ def population(request, format=None):
         for value in serializer.errors:
             for v in serializer.errors[value]:
                 if 'population with this name already exists.' == v:
-                    return JsonResponse("Conflict - Population name already in use for client", safe=False, status=status.HTTP_409_CONFLICT)
+                    return JsonResponse("Conflict - Population name already in use for client", safe=False,
+                                        status=status.HTTP_409_CONFLICT)
         return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
+
+
+#rough draft of GET member by id
+@permission_classes([HasAPIKey])
+def member(request, id):
+    if request.method == 'GET':
+        member = Member.objects.get(id=id)
+        if member:
+            serializer = MemberSerializer(member)
+            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse('Member not found', safe=False, status=status.HTTP_404_NOT_FOUND)
