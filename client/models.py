@@ -2,7 +2,7 @@ from django.db import models
 import random
 from django.utils.crypto import get_random_string
 import os
-from django.contrib.postgres.fields import ArrayField,JSONField
+from django.contrib.postgres.fields import ArrayField, JSONField
 
 if 'WEBSITE_HOSTNAME' in os.environ:
     url = 'finalurl'
@@ -91,3 +91,35 @@ class Population(models.Model):
         self.id = identifier
         self.url = self.url + str(identifier)
         super(Population, self).save(*args, **kwargs)
+
+
+#rough draft of Batch model
+class Batch(models.Model):
+    class StatusTypes(models.TextChoices):
+        SCHEDULED = 'SCHEDULED'
+        GENERATING = 'GENERATING'
+        GENERATING_ADHOC = 'GENERATING_ADHOC'
+        GENERATION_QUEUED = 'GENERATION_QUEUED'
+        PENDING_APPROVAL = 'PENDING_APPROVAL'
+        SEND_CONFIGURE = 'SEND_CONFIGURE'
+        WAITING = 'WAITING'
+        SENDING = 'SENDING'
+        NO_MESSAGES = 'NO_MESSAGES'
+        COMPLETED = 'COMPLETED'
+        ERROR = 'ERROR'
+        CANCELLED = 'CANCELLED'
+
+    id = models.IntegerField(primary_key=True)
+    runDate = models.DateTimeField()
+    numMessages = models.IntegerField()
+    numErrors = models.IntegerField()
+    status = models.CharField(max_length=30, choices=StatusTypes.choices)
+    communication = models.CharField(max_length=100, default=url + 'communication', editable=False)
+    members = ArrayField(models.CharField(max_length=55), blank=True,
+                         null=True)  # this needs tweaking --> maybe instead of charField we should use json field
+
+    def save(self, *args, **kwargs):
+        identifier = random.randint(100000000, 999999999)
+        self.id = identifier
+        self.url = self.url + str(identifier)
+        super(Batch, self).save(*args, **kwargs)
