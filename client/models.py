@@ -97,7 +97,6 @@ class Population(models.Model):
         super(Population, self).save(*args, **kwargs)
 
 
-# rough draft of Batch model
 class Batch(models.Model):
     class StatusTypes(models.TextChoices):
         SCHEDULED = 'SCHEDULED'
@@ -118,7 +117,7 @@ class Batch(models.Model):
     numMessages = models.IntegerField()
     numErrors = models.IntegerField()
     status = models.CharField(max_length=30, choices=StatusTypes.choices)
-    communication = models.CharField(max_length=100, default=url + 'communication', editable=False)
+    communication = models.CharField(max_length=100, default=url + 'communications/', editable=False)
     members = ArrayField(models.JSONField(), blank=True, null=True)  # this may need tweaking
     url = models.CharField(max_length=300, default=url + 'batches/')
 
@@ -127,13 +126,12 @@ class Batch(models.Model):
         self.url = self.url + str(self.id)
 
 
-# rough draft of Member model
+# rough draft of Member model; might not need EVER
 class Member(models.Model):
-    toName = models.CharField()
-    toAddress = models.EmailField()
+    toName = models.CharField(max_length=100)
+    toAddress = models.EmailField(max_length=100)
 
 
-# rough draft of Message model
 class Message(models.Model):
     class Types(models.TextChoices):
         EMAIL = 'EMAIL'
@@ -148,13 +146,13 @@ class Message(models.Model):
     sentDate = models.DateTimeField(null=True)
     batch = models.JSONField()
     receiptDate = models.DateTimeField()
-    fromName = models.CharField()
-    fromAddress = models.EmailField()
-    fromPhone = models.CharField()
+    fromName = models.CharField(max_length=100)
+    fromAddress = models.EmailField(default="anemail@email.com")
+    fromPhone = models.CharField(max_length=100, default='0000000')
     toAddress = models.EmailField()
-    toName = models.CharField()
-    toPhone = models.CharField()
-    subject = models.CharField()
+    toName = models.CharField(max_length=100 )
+    toPhone = models.CharField(max_length=10, default='0000000')
+    subject = models.CharField(max_length=100)
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
