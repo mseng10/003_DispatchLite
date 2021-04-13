@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from client.models import Client, Template, Campaign, Population
+from client.models import Client, Template, Campaign, Population, Member
 import collections
+
 
 def returnListOfURLS(data):
     orderedDictionary = collections.OrderedDict()
@@ -10,6 +11,7 @@ def returnListOfURLS(data):
             list.append(value)
     orderedDictionary = list
     return orderedDictionary
+
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,10 +24,12 @@ class ClientSerializer(serializers.ModelSerializer):
                   'suppressionLists',
                   'archives')
 
+
 class TemplatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = ('url',)
+
 
 class TemplateSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
@@ -53,6 +57,7 @@ class TemplateSerializer(serializers.ModelSerializer):
     def get_description(self, instance):
         return (instance.description.url if instance.description != '' else None)
 
+
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
@@ -64,6 +69,7 @@ class CampaignSerializer(serializers.ModelSerializer):
         # Required for post requests from Dispatch API, also they cannot be null
         extra_kwargs = {'name': {'required': True, 'allow_null': False},
                         'productionMode': {'required': True, 'allow_null': False}}
+
 
 class PopulationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,3 +87,14 @@ class PopulationSerializer(serializers.ModelSerializer):
         # Required for post requests from Dispatch API, also they cannot be null
         extra_kwargs = {'name': {'required': True, 'allow_null': False},
                         'dataSourceType': {'required': True, 'allow_null': False}}
+
+
+# rough MemberSerializer
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = ('toName',
+                  'toAddress')
+
+        extra_kwargs = {'toName': {'required': True, 'allow_null': False},
+                        'toAddress': {'required': True, 'allow_null': False}}
