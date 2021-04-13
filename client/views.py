@@ -1,7 +1,7 @@
 from django.http import JsonResponse
-from client.models import Client, Template, Member
+from client.models import Client, Template, Message
 from client.serializers import ClientSerializer, TemplatesSerializer, returnListOfURLS, \
-    TemplateSerializer, CampaignSerializer, PopulationSerializer, MemberSerializer
+    TemplateSerializer, CampaignSerializer, PopulationSerializer, MessageSerializer
 from client.permissions import HasAPIKey
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework import status
@@ -68,10 +68,10 @@ def population(request, format=None):
 
 #rough draft of GET member by id
 @permission_classes([HasAPIKey])
-def member(request, id):
+def message(request, id):
     if request.method == 'GET':
-        member = Member.objects.get(id=id)
-        if member:
-            serializer = MemberSerializer(member)
+        message = Message.objects.get(memberId=id) #memberId should be a string path
+        if message:
+            serializer = MessageSerializer(message)
             return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        return JsonResponse('Member not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
