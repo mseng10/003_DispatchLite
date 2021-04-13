@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from client.models import Client, Template, Campaign, Population, Message
+from client.models import Client, Template, Campaign, Population, Message, Batch
 import collections
 
 
@@ -108,3 +108,9 @@ class MessageSerializer(serializers.ModelSerializer):
                   'toPhone',
                   'subject'
                   )
+
+
+class BatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batch
+        fields = '__all__'
