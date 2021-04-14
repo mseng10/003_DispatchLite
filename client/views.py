@@ -67,22 +67,25 @@ def population(request, format=None):
 
 
 @permission_classes([HasAPIKey])
-def message(request, id):
+def messages(request, member_id):
     if request.method == 'GET':
-        message = Message.objects.get(memberId=id) #memberId should be a string path
-        if message:
+        try:
+            message = Message.objects.get(memberId=member_id)
             serializer = MessageSerializer(message)
             return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+        except Message.DoesNotExist:
+            return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
 
 
 @permission_classes([HasAPIKey])
-def batch(request, id):
+def batches(request, id):
+    breakpoint()
     if request.method == 'GET':
         try:
             batch = Batch.objects.get(id=id)
             serializer = BatchSerializer(batch)
             return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+        except Batch.DoesNotExist:
+            return JsonResponse('Batch not found', safe=False, status=status.HTTP_404_NOT_FOUND)
 
 
