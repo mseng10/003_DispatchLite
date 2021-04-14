@@ -79,8 +79,8 @@ def message(request, id):
 @permission_classes([HasAPIKey])
 def batch(request, id):
     if request.method == 'GET':
-        batch = Batch.objects.get(id=id)
-        if batch:
+        try:
+            batch = Batch.objects.get(id=id)
             serializer = BatchSerializer(batch)
             return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
         return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
