@@ -64,7 +64,7 @@ class Campaign(models.Model):
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
         self.id = identifier
-        self.url = self.url + str(identifier)
+        self.url = self.url + str(identifier)  # todo: pretty sure we want this to be user defined. right now user value would be overwritten and we wouldn't know the id of the campaign
         super(Campaign, self).save(*args, **kwargs)
 
 
@@ -85,11 +85,11 @@ class Communication(models.Model):
     template = models.CharField(max_length=300, blank=True)
     adhocs = models.CharField(max_length=300, blank=True)
     notificationAddresses = ArrayField(models.CharField(max_length=200), blank=True, null=True)
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)  # todo: pretty sure this is unneeded
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
-        self.id = identifier
+        self.id = identifier  # todo: pretty sure we don't want this
         super(Communication, self).save(*args, **kwargs)
 
 
