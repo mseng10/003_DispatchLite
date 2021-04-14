@@ -2,7 +2,7 @@
 # Once the build completes and all tests pass, the application will be deployed to azure.
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: PGSCM Workflow For Merges Into Main
+name: DispatchLite Workflow For Merges Into Main
 
 on:
   push:
