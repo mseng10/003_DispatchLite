@@ -139,7 +139,7 @@ class Message(models.Model):
         TWILIO = 'TWILIO'
 
     id = models.IntegerField(primary_key=True, editable=False)
-    memberId = models.CharField(max_length=100, editable=False)
+    memberId = models.CharField(max_length=100)
     type = models.CharField(max_length=15, choices=Types.choices)
     excluded = models.BooleanField(default=False)
     member = models.JSONField()
@@ -153,6 +153,7 @@ class Message(models.Model):
     toName = models.CharField(max_length=100 )
     toPhone = models.CharField(max_length=10, default='0000000')
     subject = models.CharField(max_length=100)
+    url = models.CharField(max_length=300, default=url + 'messages/')
 
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
