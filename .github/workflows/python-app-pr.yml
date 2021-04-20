@@ -17,19 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
-        image: postgres:12
+      db:
+        image: postgres
         env:
+          POSTGRES_DB: postgres1
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: temppassword
-          POSTGRES_DB: PostgresDevelopmentCI
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
