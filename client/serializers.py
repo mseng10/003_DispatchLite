@@ -71,6 +71,46 @@ class CommunicationSerializer(serializers.ModelSerializer):
         model = Communication
         fields = '__all__'
 
+        # Required for post requests from Dispatch API, also they cannot be null
+        extra_kwargs = {'email': {'required': True},
+                        'destination': {'required': True},
+                        'name': {'required': True}}
+
+    def validate_email(self, value):
+        try:
+            value['fromAddress']
+            value['fromName']
+            value['subject']
+        except KeyError:
+            raise serializers.ValidationError("'email' must have fromAddress, fromName, and subject.")
+        return value
+
+    def validate_destinations(self, value):
+        try:
+            value[0]['bounceAddress']
+            value[0]['linkTrackingDisabled']
+            value[0]['openTrackingDisabled']
+            value[0]['replyToAddress']
+            value[0]['suppressionList']
+            value[0]['type']
+        except KeyError:
+            raise serializers.ValidationError("Field 'destinations' must provide boundAddress, linkTrackingDisabled, openTrackingDisabled, replyToAddress, suppressionList, and type.")
+        if len(value) != 1 or value[0]['type'] != 'SMTP':
+            raise serializers.ValidationError("DispatchLite only support SMTP type destinations.")
+        return value
+
+    def validate(self, data):
+        if data['type'] == 'EMAIL':
+            try:
+                data['email']
+            except KeyError:
+                raise serializers.ValidationError("'email' field must have data if 'type' is 'EMAIL'")
+        else:
+            raise serializers.ValidationError("DispatchLite only supports 'type' of 'EMAIL'")
+
+        return data
+
+
 
 class PopulationSerializer(serializers.ModelSerializer):
     class Meta:
