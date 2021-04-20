@@ -2,7 +2,8 @@ from django.db import models
 import random
 from django.utils.crypto import get_random_string
 import os
-from django.contrib.postgres.fields import ArrayField,JSONField
+from django.contrib.postgres.fields import ArrayField
+from django.db.models import JSONField
 
 if 'WEBSITE_HOSTNAME' in os.environ:
     url = 'finalurl'
@@ -52,6 +53,7 @@ class Template(models.Model):
         self.url = self.url + str(identifier)
         super(Template, self).save(*args, **kwargs)
 
+
 class Campaign(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -74,22 +76,22 @@ class Communication(models.Model):
         WARNINGS = 'WARNINGS'
         ALL = 'ALL'
 
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True)  # will be stage id
     name = models.CharField(max_length=100)
     comments = models.CharField(max_length=100, blank=True)
-    type = models.CharField(max_length=6, choices=Types.choices)
-    # email = None  # todo
-    # destinations = None  # todo
+    type = models.CharField(max_length=6, choices=Types.choices)  # todo- if email then email must be defined
+    email = models.JSONField(null=True)  # todo- how to validate/do we need to
+    destinations = models.JSONField(null=True)  # todo- how to validate? do I need to validate? examine use cases
     alertOn = models.CharField(max_length=8, choices=AlertOnChoices.choices, default='ALL')
-    # placeholders = None  # todo
+    placeholders = JSONField(blank=True, null=True)  # todo- how to validate/do we need to
     template = models.CharField(max_length=300, blank=True)
     adhocs = models.CharField(max_length=300, blank=True)
     notificationAddresses = ArrayField(models.CharField(max_length=200), blank=True, null=True)
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)  # todo: pretty sure this is unneeded
+    campaign = models.CharField(max_length=300, blank=True)
+    url = models.CharField(max_length=100, default=url + 'communications/', editable=False)  ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
-        identifier = random.randint(100000000, 999999999)
-        self.id = identifier  # todo: pretty sure we don't want this
+        self.url = self.url + str(self.id)
         super(Communication, self).save(*args, **kwargs)
 
 
