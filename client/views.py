@@ -1,9 +1,9 @@
 from django.http import JsonResponse
-from client.models import Client, Template
+from client.models import Client, Template, Message, Batch
 from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
-                               TemplateSerializer, CampaignSerializer, PopulationSerializer, CommunicationSerializer
+                               TemplateSerializer, CampaignSerializer, PopulationSerializer, CommunicationSerializer, MessageSerializer, BatchSerializer
 from client.permissions import HasAPIKey
-from rest_framework.decorators import permission_classes,api_view
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import parser_classes
@@ -16,13 +16,15 @@ else:
     url = 'http://127.0.0.1:8000/'
 
 
+
 @permission_classes([HasAPIKey])
 def client(request):
     key = request.META.get("HTTP_AUTHORIZATION").split()[1]
     if request.method == 'GET':
         client = Client.objects.get(key=key)
         serializer = ClientSerializer(client)
-        return JsonResponse(serializer.data, safe=False,status=status.HTTP_200_OK)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+
 
 @permission_classes([HasAPIKey])
 def templates(request):
@@ -32,14 +34,16 @@ def templates(request):
         data = returnListOfURLS(serializer.data)
         return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
 
+
 @permission_classes([HasAPIKey])
-def template(request,id):
+def template(request, id):
     if request.method == 'GET':
         template = Template.objects.get(id=id)
         if template:
             serializer = TemplateSerializer(template)
             return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        return JsonResponse('Template not found',safe=False, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse('Template not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+
 
 @permission_classes([HasAPIKey])
 @parser_classes([JSONParser])
@@ -80,5 +84,31 @@ def population(request, format=None):
         for value in serializer.errors:
             for v in serializer.errors[value]:
                 if 'population with this name already exists.' == v:
-                    return JsonResponse("Conflict - Population name already in use for client", safe=False, status=status.HTTP_409_CONFLICT)
+                    return JsonResponse("Conflict - Population name already in use for client", safe=False,
+                                        status=status.HTTP_409_CONFLICT)
         return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
+
+
+@permission_classes([HasAPIKey])
+def messages(request, member_id):
+    if request.method == 'GET':
+        try:
+            message = Message.objects.get(memberId=member_id)
+            serializer = MessageSerializer(message)
+            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+        except Message.DoesNotExist:
+            return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+
+
+@permission_classes([HasAPIKey])
+def batches(request, id):
+    breakpoint()
+    if request.method == 'GET':
+        try:
+            batch = Batch.objects.get(id=id)
+            serializer = BatchSerializer(batch)
+            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+        except Batch.DoesNotExist:
+            return JsonResponse('Batch not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+
+

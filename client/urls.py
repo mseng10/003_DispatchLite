@@ -7,5 +7,7 @@ urlpatterns = [
     path('templates/<int:id>', views.template),
     path('campaigns/', views.campaign),
     path('populations/', views.population),
-    path('campaigns/<str:campaign_id>/communications', views.communication)
+    path('batches/<int:id>/', views.batches),
+    path('messages/<str:member_id>/', views.messages),
+    path('campaigns/<str:campaign_id>/communications', views.communication),
 ]

@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from client.models import Client, Template, Campaign, Population, Communication
+from client.models import Client, Template, Campaign, Population, Communication, Message, Batch
 import collections
+
 
 def returnListOfURLS(data):
     orderedDictionary = collections.OrderedDict()
@@ -10,6 +11,7 @@ def returnListOfURLS(data):
             list.append(value)
     orderedDictionary = list
     return orderedDictionary
+
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,10 +24,12 @@ class ClientSerializer(serializers.ModelSerializer):
                   'suppressionLists',
                   'archives')
 
+
 class TemplatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = ('url',)
+
 
 class TemplateSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
@@ -52,6 +56,7 @@ class TemplateSerializer(serializers.ModelSerializer):
 
     def get_description(self, instance):
         return (instance.description.url if instance.description != '' else None)
+
 
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
@@ -111,7 +116,6 @@ class CommunicationSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class PopulationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Population
@@ -128,3 +132,30 @@ class PopulationSerializer(serializers.ModelSerializer):
         # Required for post requests from Dispatch API, also they cannot be null
         extra_kwargs = {'name': {'required': True, 'allow_null': False},
                         'dataSourceType': {'required': True, 'allow_null': False}}
+
+
+# rough MessageSerializer
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ('memberId',
+                  'type',
+                  'excluded',
+                  'member',
+                  'sentDate',
+                  'batch',
+                  'receiptDate',
+                  'fromName',
+                  'fromAddress',
+                  'fromPhone',
+                  'toAddress',
+                  'toName',
+                  'toPhone',
+                  'subject'
+                  )
+
+
+class BatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batch
+        fields = '__all__'
