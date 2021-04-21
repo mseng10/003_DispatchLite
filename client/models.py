@@ -152,6 +152,8 @@ class Batch(models.Model):
 
     def save(self, *args, **kwargs):
         super(Batch, self).save(*args, **kwargs)
+        identifier = random.randint(100000000, 999999999)
+        self.id = identifier
         self.url = self.url + str(self.id)
 
 
