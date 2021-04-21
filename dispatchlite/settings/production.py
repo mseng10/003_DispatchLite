@@ -2,7 +2,7 @@ from dispatchlite.settings.common import *
 import os
 
 DEBUG = False
-ALLOWED_HOSTS = [""]
+ALLOWED_HOSTS = ["dispatchlite.azurewebsites.net"]
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
