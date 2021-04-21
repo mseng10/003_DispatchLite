@@ -87,8 +87,9 @@ def adhoc_communication(request, communication_id):
     except KeyError:
         include_batch_response = False
     batch = Batch().create_from_adhoc(request.data['members'], communication.url)
-    for member in batches.members:
-        Message().create_from_adhoc(member=member, batch=batch, communication=communication)
+    for member in batch.members:
+        batch_data = BatchSerializer(batch).data
+        Message().create_from_adhoc(member=member, batch=batch_data, communication=communication)
     if include_batch_response:
         return JsonResponse(batch.url, safe=False, status=status.HTTP_201_CREATED)
     else:

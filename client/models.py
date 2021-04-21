@@ -6,7 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db.models import JSONField
 import datetime
 
-from client.serializers import BatchSerializer
+# from client.serializers import BatchSerializer
 
 if 'WEBSITE_HOSTNAME' in os.environ:
     url = 'finalurl'
@@ -214,7 +214,7 @@ class Message(models.Model):
         self.memberId = member['id']
         self.member = member
         self.sentDate = datetime.datetime.utcnow()
-        self.batch = BatchSerializer(batch).data
+        self.batch = batch
         self.receiptDate = None
         self.fromAddress = communication.email['fromAddress']
         self.fromName = communication.email['fromName']
