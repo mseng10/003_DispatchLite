@@ -4,6 +4,7 @@ from django.utils.crypto import get_random_string
 import os
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import JSONField
+import datetime
 
 
 if 'WEBSITE_HOSTNAME' in os.environ:
@@ -93,7 +94,8 @@ class Communication(models.Model):
     url = models.CharField(max_length=100, default=url + 'communications/', editable=False)  ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
-        self.url = self.url + str(self.id)
+        if self.url[-1] == '/':
+            self.url = self.url + str(self.id)
         super(Communication, self).save(*args, **kwargs)
 
 
@@ -151,10 +153,22 @@ class Batch(models.Model):
     url = models.CharField(max_length=300, default=url + 'batches/')
 
     def save(self, *args, **kwargs):
-        super(Batch, self).save(*args, **kwargs)
         identifier = random.randint(100000000, 999999999)
         self.id = identifier
         self.url = self.url + str(self.id)
+        super(Batch, self).save(*args, **kwargs)
+
+    def create_from_adhoc(self, members, communication_url):
+        self.runDate = datetime.datetime.utcnow()
+        self.numMessages = len(members)
+        self.numErrors = 0
+        self.status = "COMPLETED"
+        self.communication = communication_url
+        for member in members:
+            member['id'] = str(random.randint(10**9, 10**10 - 1))
+        self.members = members
+        self.save()
+        return self
 
 
 # rough draft of Member model; might not need EVER
