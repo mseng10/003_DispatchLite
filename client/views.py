@@ -87,6 +87,7 @@ def adhoc_communication(request, communication_id):
     except KeyError:
         include_batch_response = False
     batch = Batch().create_from_adhoc(request.data['members'], communication.url)
+    # todo- create a message for each member in the batch. Could use a serializer, or write a create_from_adhoc method similar to the Batch.create_from_adhoc method
     if include_batch_response:
         return JsonResponse(batch.url, safe=False, status=status.HTTP_201_CREATED)
     else:
@@ -123,7 +124,6 @@ def messages(request, member_id):
 
 @permission_classes([HasAPIKey])
 def batches(request, id):
-    breakpoint()
     if request.method == 'GET':
         try:
             batch = Batch.objects.get(id=id)
