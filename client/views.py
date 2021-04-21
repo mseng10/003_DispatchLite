@@ -75,6 +75,13 @@ def communication(request, campaign_id):
 @permission_classes([HasAPIKey])
 @parser_classes([JSONParser])
 @api_view(['POST'])
+def adhoc_communication(request, communication_id):
+    pass
+
+
+@permission_classes([HasAPIKey])
+@parser_classes([JSONParser])
+@api_view(['POST'])
 def population(request, format=None):
     serializer = PopulationSerializer(data=request.data)
     if serializer.is_valid():
