@@ -1,12 +1,20 @@
 from django.http import JsonResponse
 from client.models import Client, Template
 from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
-                               TemplateSerializer, CampaignSerializer, PopulationSerializer
+                               TemplateSerializer, CampaignSerializer, PopulationSerializer, CommunicationSerializer
 from client.permissions import HasAPIKey
 from rest_framework.decorators import permission_classes,api_view
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import parser_classes
+import os
+
+
+if 'WEBSITE_HOSTNAME' in os.environ:
+    url = 'finalurl'
+else:
+    url = 'http://127.0.0.1:8000/'
+
 
 @permission_classes([HasAPIKey])
 def client(request):
@@ -22,7 +30,7 @@ def templates(request):
         templates = Template.objects.all()
         serializer = TemplatesSerializer(data=templates, many=True)
         data = returnListOfURLS(serializer.data)
-        return JsonResponse(data, safe=False,status=status.HTTP_200_OK)
+        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
 
 @permission_classes([HasAPIKey])
 def template(request,id):
@@ -43,6 +51,22 @@ def campaign(request, format=None):
         return JsonResponse(obj.url, safe=False, status=status.HTTP_201_CREATED)
     else:
         return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
+
+
+@permission_classes([HasAPIKey])
+@parser_classes([JSONParser])
+@api_view(['POST'])
+def communication(request, campaign_id):
+    campaign = url + 'campaigns/' + str(campaign_id)
+    serializer = CommunicationSerializer(data=request.data)
+    if serializer.is_valid():
+        communication = serializer.save()
+        communication.campaign = campaign
+        communication.save()
+        return JsonResponse(communication.url, safe=False, status=status.HTTP_201_CREATED)
+    else:
+        return JsonResponse(serializer.errors, safe=False, status=status.HTTP_400_BAD_REQUEST)
+
 
 @permission_classes([HasAPIKey])
 @parser_classes([JSONParser])
