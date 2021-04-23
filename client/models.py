@@ -4,7 +4,9 @@ from django.utils.crypto import get_random_string
 import os
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import JSONField
+import datetime
 
+# from client.serializers import BatchSerializer
 
 if 'WEBSITE_HOSTNAME' in os.environ:
     url = 'finalurl'
@@ -37,7 +39,6 @@ class Types(models.TextChoices):
 
 
 class Template(models.Model):
-
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=4000, blank=True)
@@ -68,7 +69,8 @@ class Campaign(models.Model):
     def save(self, *args, **kwargs):
         identifier = random.randint(100000000, 999999999)
         self.id = identifier
-        self.url = self.url + str(identifier)  # todo: pretty sure we want this to be user defined. right now user value would be overwritten and we wouldn't know the id of the campaign
+        self.url = self.url + str(
+            identifier)  # todo: pretty sure we want this to be user defined. right now user value would be overwritten and we wouldn't know the id of the campaign
         super(Campaign, self).save(*args, **kwargs)
 
 
@@ -93,7 +95,8 @@ class Communication(models.Model):
     url = models.CharField(max_length=100, default=url + 'communications/', editable=False)  ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
-        self.url = self.url + str(self.id)
+        if self.url[-1] == '/':
+            self.url = self.url + str(self.id)
         super(Communication, self).save(*args, **kwargs)
 
 
@@ -151,8 +154,22 @@ class Batch(models.Model):
     url = models.CharField(max_length=300, default=url + 'batches/')
 
     def save(self, *args, **kwargs):
-        super(Batch, self).save(*args, **kwargs)
+        identifier = random.randint(100000000, 999999999)
+        self.id = identifier
         self.url = self.url + str(self.id)
+        super(Batch, self).save(*args, **kwargs)
+
+    def create_from_adhoc(self, members, communication_url):
+        self.runDate = datetime.datetime.utcnow()
+        self.numMessages = len(members)
+        self.numErrors = 0
+        self.status = "COMPLETED"
+        self.communication = communication_url
+        for member in members:
+            member['id'] = str(random.randint(10 ** 9, 10 ** 10 - 1))
+        self.members = members
+        self.save()
+        return self
 
 
 # rough draft of Member model; might not need EVER
@@ -174,12 +191,12 @@ class Message(models.Model):
     member = models.JSONField()
     sentDate = models.DateTimeField(null=True)
     batch = models.JSONField()
-    receiptDate = models.DateTimeField()
+    receiptDate = models.DateTimeField(null=True)
     fromName = models.CharField(max_length=100)
     fromAddress = models.EmailField(default="anemail@email.com")
     fromPhone = models.CharField(max_length=100, default='0000000')
     toAddress = models.EmailField()
-    toName = models.CharField(max_length=100 )
+    toName = models.CharField(max_length=100)
     toPhone = models.CharField(max_length=10, default='0000000')
     subject = models.CharField(max_length=100)
     url = models.CharField(max_length=300, default=url + 'messages/')
@@ -190,7 +207,21 @@ class Message(models.Model):
         self.url = self.url + str(identifier)
         super(Message, self).save(*args, **kwargs)
 
-
+    def create_from_adhoc(self, member, batch, communication):
+        self.type = 'EMAIL'
+        self.toAddress = member['toAddress']
+        self.toName = member['toName']
+        self.memberId = member['id']
+        self.member = member
+        self.sentDate = datetime.datetime.utcnow()
+        self.batch = batch
+        self.receiptDate = None
+        self.fromAddress = communication.email['fromAddress']
+        self.fromName = communication.email['fromName']
+        self.subject = communication.email['subject']
+        self.url = self.url + member['id']
+        self.save()
+        return self
 
 
 

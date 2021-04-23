@@ -1,7 +1,6 @@
 from django.http import JsonResponse
-from client.models import Client, Template, Message, Batch
-from client.serializers import ClientSerializer, TemplatesSerializer,returnListOfURLS,\
-                               TemplateSerializer, CampaignSerializer, PopulationSerializer, CommunicationSerializer, MessageSerializer, BatchSerializer
+from client.models import *
+from client.serializers import *
 from client.permissions import HasAPIKey
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework import status
@@ -75,6 +74,31 @@ def communication(request, campaign_id):
 @permission_classes([HasAPIKey])
 @parser_classes([JSONParser])
 @api_view(['POST'])
+def adhoc_communication(request, communication_id):
+    serializer = MemberSerializer(data=request.data['members'], many=True)
+    if not serializer.is_valid():
+        return JsonResponse("There was some problem parsing your array of members.", safe=False, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        communication = Communication.objects.get(id=communication_id)
+    except Communication.DoesNotExist:
+        return JsonResponse("Communication not found", safe=False, status=status.HTTP_404_NOT_FOUND)
+    try:
+        include_batch_response = request.data['includeBatchResponse']
+    except KeyError:
+        include_batch_response = False
+    batch = Batch().create_from_adhoc(request.data['members'], communication.url)
+    for member in batch.members:
+        batch_data = BatchSerializer(batch).data
+        Message().create_from_adhoc(member=member, batch=batch_data, communication=communication)
+    if include_batch_response:
+        return JsonResponse(batch.url, safe=False, status=status.HTTP_201_CREATED)
+    else:
+        return JsonResponse("Successful response", safe=False, status=status.HTTP_200_OK)
+
+
+@permission_classes([HasAPIKey])
+@parser_classes([JSONParser])
+@api_view(['POST'])
 def population(request, format=None):
     serializer = PopulationSerializer(data=request.data)
     if serializer.is_valid():
@@ -102,7 +126,6 @@ def messages(request, member_id):
 
 @permission_classes([HasAPIKey])
 def batches(request, id):
-    breakpoint()
     if request.method == 'GET':
         try:
             batch = Batch.objects.get(id=id)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from client.models import Client, Template, Campaign, Population, Communication, Message, Batch
+from client.models import *
 import collections
 
 
@@ -132,6 +132,12 @@ class PopulationSerializer(serializers.ModelSerializer):
         # Required for post requests from Dispatch API, also they cannot be null
         extra_kwargs = {'name': {'required': True, 'allow_null': False},
                         'dataSourceType': {'required': True, 'allow_null': False}}
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = '__all__'
 
 
 # rough MessageSerializer
