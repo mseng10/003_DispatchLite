@@ -17,6 +17,7 @@ else:
 
 
 @permission_classes([HasAPIKey])
+@api_view(['GET'])
 def client(request):
     key = request.META.get("HTTP_AUTHORIZATION").split()[1]
     if request.method == 'GET':
@@ -26,22 +27,22 @@ def client(request):
 
 
 @permission_classes([HasAPIKey])
+@api_view(['GET'])
 def templates(request):
-    if request.method == 'GET':
-        templates = Template.objects.all()
-        serializer = TemplatesSerializer(templates, many=True)
-        data = returnListOfURLS(serializer.data)
-        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
+    templates = Template.objects.all()
+    serializer = TemplatesSerializer(templates, many=True)
+    data = returnListOfURLS(serializer.data)
+    return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
 
 
 @permission_classes([HasAPIKey])
+@api_view(['GET'])
 def template(request, id):
-    if request.method == 'GET':
-        template = Template.objects.get(id=id)
-        if template:
-            serializer = TemplateSerializer(template)
-            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        return JsonResponse('Template not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+    template = Template.objects.get(id=id)
+    if template:
+        serializer = TemplateSerializer(template)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse('Template not found', safe=False, status=status.HTTP_404_NOT_FOUND)
 
 
 @permission_classes([HasAPIKey])
@@ -114,24 +115,23 @@ def population(request, format=None):
 
 
 @permission_classes([HasAPIKey])
+@api_view(['GET'])
 def messages(request, member_id):
-    if request.method == 'GET':
-        try:
-            message = Message.objects.get(memberId=member_id)
-            serializer = MessageSerializer(message)
-            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        except Message.DoesNotExist:
-            return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
+    try:
+        message = Message.objects.get(memberId=member_id)
+        serializer = MessageSerializer(message)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+    except Message.DoesNotExist:
+        return JsonResponse('Message not found', safe=False, status=status.HTTP_404_NOT_FOUND)
 
 
 @permission_classes([HasAPIKey])
+@api_view(['GET'])
 def batches(request, id):
-    if request.method == 'GET':
-        try:
-            batch = Batch.objects.get(id=id)
-            serializer = BatchSerializer(batch)
-            return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
-        except Batch.DoesNotExist:
-            return JsonResponse('Batch not found', safe=False, status=status.HTTP_404_NOT_FOUND)
-
-
+    breakpoint()
+    try:
+        batch = Batch.objects.get(id=id)
+        serializer = BatchSerializer(batch)
+        return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
+    except Batch.DoesNotExist:
+        return JsonResponse('Batch not found', safe=False, status=status.HTTP_404_NOT_FOUND)
