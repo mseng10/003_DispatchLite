@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import parser_classes
 import os
+import pdb
 
 
 if 'WEBSITE_HOSTNAME' in os.environ:
@@ -60,7 +61,11 @@ def campaign(request, format=None):
 @parser_classes([JSONParser])
 @api_view(['POST'])
 def communication(request, campaign_id):
-    campaign = url + 'campaigns/' + str(campaign_id)
+    try:
+        campaign = Campaign.objects.get(id=campaign_id)
+    except Campaign.DoesNotExist:
+        return JsonResponse("Bad Request", safe=False, status=status.HTTP_400_BAD_REQUEST)
+    campaign = campaign.url
     serializer = CommunicationSerializer(data=request.data)
     if serializer.is_valid():
         communication = serializer.save()
