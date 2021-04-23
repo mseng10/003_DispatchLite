@@ -61,7 +61,8 @@ class TemplateSerializer(serializers.ModelSerializer):
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
-        fields = ('name',
+        fields = ('id',
+                  'name',
                   'tags',
                   'productionMode',
                   'communications')
