@@ -9,7 +9,7 @@ from django.db.models import JSONField
 if 'WEBSITE_HOSTNAME' in os.environ:
     url = 'finalurl'
 else:
-    url = 'http://127.0.0.1:8000/'
+    url = 'http://127.0.0.1:8001/'
 
 
 # Create your models here.
