@@ -49,13 +49,13 @@ class TemplateSerializer(serializers.ModelSerializer):
                   'type')
 
     def get_comments(self, instance):
-        return (instance.comments.url if instance.comments != '' else None)
+        return (instance.comments if instance.comments != '' else None)
 
     def get_content(self, instance):
-        return (instance.content.url if instance.content != '' else None)
+        return (instance.content if instance.content != '' else None)
 
     def get_description(self, instance):
-        return (instance.description.url if instance.description != '' else None)
+        return (instance.description if instance.description != '' else None)
 
 
 class CampaignSerializer(serializers.ModelSerializer):
