@@ -67,10 +67,7 @@ class Campaign(models.Model):
     url = models.CharField(max_length=100, default=url + 'campaigns/', editable=False)  ## not Dispatch just helper
 
     def save(self, *args, **kwargs):
-        identifier = random.randint(100000000, 999999999)
-        self.id = identifier
-        self.url = self.url + str(
-            identifier)  # todo: pretty sure we want this to be user defined. right now user value would be overwritten and we wouldn't know the id of the campaign
+        self.url = self.url + str(self.id)  # todo: pretty sure we want this to be user defined. right now user value would be overwritten and we wouldn't know the id of the campaign
         super(Campaign, self).save(*args, **kwargs)
 
 
