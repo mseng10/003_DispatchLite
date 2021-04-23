@@ -30,7 +30,7 @@ def client(request):
 def templates(request):
     if request.method == 'GET':
         templates = Template.objects.all()
-        serializer = TemplatesSerializer(data=templates, many=True)
+        serializer = TemplatesSerializer(templates, many=True)
         data = returnListOfURLS(serializer.data)
         return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
 
