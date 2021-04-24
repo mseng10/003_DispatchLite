@@ -9,7 +9,7 @@ import datetime
 # from client.serializers import BatchSerializer
 
 if 'WEBSITE_HOSTNAME' in os.environ:
-    url = 'finalurl'
+    url = 'https://dispatchlite.azurewebsites.net/'
 else:
     url = 'http://127.0.0.1:8001/'
 
