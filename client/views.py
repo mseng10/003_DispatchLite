@@ -133,7 +133,6 @@ def messages(request, member_id):
 @permission_classes([HasAPIKey])
 @api_view(['GET'])
 def batches(request, id):
-    breakpoint()
     try:
         batch = Batch.objects.get(id=id)
         serializer = BatchSerializer(batch)
