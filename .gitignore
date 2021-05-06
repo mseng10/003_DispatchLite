@@ -23,6 +23,10 @@ __pycache__/
 .idea/**/gradle.xml
 .idea/**/libraries
 *.iws /out/
+# added new:
+.idea/003_DispatchLite.iml
+.idea/misc.xml
+.idea/modules.xml
 
 # Distribution / packaging
 .Python
