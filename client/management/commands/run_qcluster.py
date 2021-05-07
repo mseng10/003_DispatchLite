@@ -7,8 +7,9 @@ class Command(BaseCommand):
     help = "Loads example pipeline data into the database"
 
     def handle(self, *args, **options):
-        send_mail(subject="PGSCM rate limit exceeded",
-                  message='IT WOOOOOOOOORKS!!!!!!!!!!11',
-                  from_email=settings.EMAIL_HOST_USER, recipient_list=['dnkelly97@gmail.com'],
-                  fail_silently=False, auth_user=None,
-                  auth_password=None, connection=None, html_message=None)
+        pass
+        # send_mail(subject="PGSCM rate limit exceeded",
+        #           message='IT WOOOOOOOOORKS!!!!!!!!!!11',
+        #           from_email=settings.EMAIL_HOST_USER, recipient_list=['dnkelly97@gmail.com'],
+        #           fail_silently=False, auth_user=None,
+        #           auth_password=None, connection=None, html_message=None)
