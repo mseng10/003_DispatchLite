@@ -32,7 +32,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'client.apps.ClientConfig',
+    'django_q'
 ]
+
+Q_CLUSTER = {
+    'name': 'test thing',
+    'orm': 'default',
+    'timeout': 500,
+    'retry': 1000,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
